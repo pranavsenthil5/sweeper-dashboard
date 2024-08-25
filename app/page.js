@@ -69,7 +69,7 @@ export default function Home() {
   }
 
   return (
-    <main className="p-4">
+    <main className="p-4 max-h-screen">
       {/* {projects.map((project) => (
         <div key={project.id}>
           <h2>{project.name}</h2>

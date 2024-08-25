@@ -9,8 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-
 import { useState, useEffect } from "react";
+
+import Chart from "@/app/components/chart";
+
 async function getMetrics() {
   const response = await fetch("http://localhost:3000/api/metrics/", {
     mode: "cors",
@@ -91,6 +93,7 @@ async function getMeasurements(projectKey) {
 
 export default function Page({ params }) {
   const [measurements, setMeasurements] = useState([]);
+  const [selectedMeasurement, setSelectedMeasurement] = useState([]);
   useEffect(() => {
     var data = getMeasurements(params.project_key);
     data.then((measurements) => {
@@ -99,15 +102,18 @@ export default function Page({ params }) {
   }, [params.project_key]);
 
   return (
-    <>
-      <div className="p-4 flex flex-col space-y-4">
+    <div className="flex ">
+      <div className="p-4 flex flex-col gap-4  align-items-center w-1/2">
+        <div className="grid grid-cols-2 gap-4">
         {measurements.length > 0 &&
           measurements.map((measurement) => {
             return (
               <>
                 {/* find the unique  */}
                 {measurement.history[0].value && (
-                  <Card className="w-64 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-4 whitespace-pre-wrap">
+                  <Card 
+                  className="min-w-48 bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 p-1 whitespace-pre-wrap"
+                  onClick={() => {setSelectedMeasurement(measurement)}} >
                     <CardContent className="space-y-2">
                       <CardDescription className="text-gray-500 text-sm uppercase tracking-wide">
                         {measurement.description}
@@ -120,7 +126,10 @@ export default function Page({ params }) {
                               Object.entries(
                                 JSON.parse(measurement.history[0].value)
                               ).map(([key, value]) => (
-                                <div key={key} className="flex justify-between">
+                                <div
+                                  key={key}
+                                  className="flex justify-between text-sm"
+                                >
                                   <span>{key}</span>
                                   <span>{value}</span>
                                 </div>
@@ -134,7 +143,11 @@ export default function Page({ params }) {
               </>
             );
           })}
+        </div>
       </div>
-    </>
+      <div className="w-1/2 p-4">
+          <Chart measurement={selectedMeasurement} />
+      </div>
+    </div>
   );
 }
